@@ -7,19 +7,30 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="min-h-screen bg-slate-100 text-slate-900">
-    <div class="mx-auto max-w-7xl px-6 py-8">
-      <header class="mb-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">The Whisper System</p>
-        <h1 class="mt-2 text-3xl font-bold">Cross-Department Routing Dashboard</h1>
-        <p class="mt-2 text-slate-600">
-          Route issues by role, enforce the 15-minute SLA, and automatically cascade unacknowledged tickets.
-        </p>
+    <div class="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
+      <header class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">The Whisper System</p>
+            <h1 class="mt-2 text-2xl font-bold md:text-3xl">Enterprise Routing Command Center</h1>
+            <p class="mt-2 max-w-3xl text-sm text-slate-600 md:text-base">
+              Route by role, enforce the 15-minute acknowledgement SLA, and auto-cascade to backup coverage without manual follow-up.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="seedDemoBtn" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Seed Demo Tickets</button>
+            <button id="exportBtn" class="rounded-lg border border-blue-300 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100">Export JSON</button>
+            <button id="clearAllBtn" class="rounded-lg border border-rose-300 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100">Clear All</button>
+          </div>
+        </div>
       </header>
 
-      <main class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <section class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" id="metrics"></section>
+
+      <main class="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <section class="space-y-6">
-          <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="text-xl font-semibold">1) Submit a Whisper</h2>
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+            <h2 class="text-lg font-semibold md:text-xl">1) Submit a Whisper</h2>
             <form id="intakeForm" class="mt-4 grid gap-4 md:grid-cols-2">
               <label class="text-sm font-medium text-slate-700">
                 Target Department
@@ -29,6 +40,7 @@
                   <option>Operations</option>
                   <option>Finance</option>
                   <option>Customer Support</option>
+                  <option>Legal</option>
                 </select>
               </label>
 
@@ -40,6 +52,7 @@
                   <option>Escalation Request</option>
                   <option>Audit Readiness</option>
                   <option>Process Exception</option>
+                  <option>Documentation Gap</option>
                 </select>
               </label>
 
@@ -56,8 +69,9 @@
               <label class="text-sm font-medium text-slate-700 md:col-span-2">
                 Brief Description
                 <textarea
-                  id="description" name="description"
-                  rows="4"
+                  id="description"
+                  name="description"
+                  rows="3"
                   maxlength="300"
                   class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
                   placeholder="Describe the issue in 1-2 sentences..."
@@ -65,41 +79,74 @@
                 ></textarea>
               </label>
 
-              <button
-                type="submit"
-                class="inline-flex w-full items-center justify-center rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white transition hover:bg-blue-800 md:col-span-2 md:w-auto"
-              >
-                Submit
+              <button type="submit" class="inline-flex w-full items-center justify-center rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white hover:bg-blue-800 md:col-span-2 md:w-auto">
+                Submit Whisper
               </button>
             </form>
           </article>
 
-          <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div class="flex items-center justify-between gap-2">
-              <h2 class="text-xl font-semibold">3) Active SME Queue &amp; Escalation Cascade</h2>
-              <p class="text-sm text-slate-500">15-minute SLA timer per ticket</p>
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h2 class="text-lg font-semibold md:text-xl">3) Active SME Queue &amp; Escalation Cascade</h2>
+              <p class="text-sm text-slate-500">SLA target: 15:00 to acknowledge</p>
             </div>
+
+            <div class="mt-4 grid gap-3 md:grid-cols-3">
+              <label class="text-sm font-medium text-slate-700">
+                Search
+                <input id="searchFilter" type="text" placeholder="ID, owner, description..." class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" />
+              </label>
+              <label class="text-sm font-medium text-slate-700">
+                Status
+                <select id="statusFilter" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                  <option value="all">All statuses</option>
+                  <option value="Awaiting Acknowledgement">Awaiting Acknowledgement</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Escalated">Escalated</option>
+                  <option value="Resolved">Resolved</option>
+                </select>
+              </label>
+              <label class="text-sm font-medium text-slate-700">
+                Urgency
+                <select id="urgencyFilter" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                  <option value="all">All urgencies</option>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </label>
+            </div>
+
             <div id="queue" class="mt-4 space-y-4"></div>
           </article>
         </section>
 
-        <aside class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 class="text-xl font-semibold">2) The Coverage Baton</h2>
-          <p class="mt-2 text-sm text-slate-600">Compliance Department Roster</p>
-
-          <div class="mt-5 space-y-4">
-            <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-              <p class="text-xs font-semibold uppercase tracking-wide text-emerald-700">Active SME (On Duty)</p>
-              <p class="mt-1 text-lg font-semibold">John Doe</p>
-              <p class="text-sm text-slate-600">Primary Routing Owner</p>
+        <aside class="space-y-6">
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+            <h2 class="text-lg font-semibold md:text-xl">2) The Coverage Baton</h2>
+            <p class="mt-1 text-sm text-slate-600">Compliance Department Roster</p>
+            <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-emerald-700">Active SME (On Duty)</p>
+                <p id="activeSmeDisplay" class="mt-1 text-lg font-semibold">John Doe</p>
+                <p class="text-sm text-slate-600">Primary Routing Owner</p>
+              </div>
+              <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
+                <p class="text-xs font-semibold uppercase tracking-wide text-amber-700">Secondary / Backup</p>
+                <p id="backupSmeDisplay" class="mt-1 text-lg font-semibold">Jane Smith</p>
+                <p class="text-sm text-slate-600">Auto-escalation Receiver</p>
+              </div>
             </div>
+            <button id="passBatonBtn" class="mt-4 w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+              Pass Baton (Swap Active/Backup)
+            </button>
+          </article>
 
-            <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
-              <p class="text-xs font-semibold uppercase tracking-wide text-amber-700">Secondary / Backup</p>
-              <p class="mt-1 text-lg font-semibold">Jane Smith</p>
-              <p class="text-sm text-slate-600">Auto-escalation Receiver</p>
-            </div>
-          </div>
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+            <h3 class="text-lg font-semibold">Activity Feed</h3>
+            <p class="mt-1 text-sm text-slate-600">Recent routing and SLA events</p>
+            <div id="activityFeed" class="mt-4 max-h-96 space-y-3 overflow-auto"></div>
+          </article>
         </aside>
       </main>
     </div>
