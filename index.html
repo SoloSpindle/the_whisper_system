@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Whisper System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-slate-100 text-slate-900">
+    <div class="mx-auto max-w-7xl px-6 py-8">
+      <header class="mb-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">The Whisper System</p>
+        <h1 class="mt-2 text-3xl font-bold">Cross-Department Routing Dashboard</h1>
+        <p class="mt-2 text-slate-600">
+          Route issues by role, enforce the 15-minute SLA, and automatically cascade unacknowledged tickets.
+        </p>
+      </header>
+
+      <main class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <section class="space-y-6">
+          <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-xl font-semibold">1) Submit a Whisper</h2>
+            <form id="intakeForm" class="mt-4 grid gap-4 md:grid-cols-2">
+              <label class="text-sm font-medium text-slate-700">
+                Target Department
+                <select id="targetDepartment" name="targetDepartment" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" required>
+                  <option value="">Select a department</option>
+                  <option>Compliance</option>
+                  <option>Operations</option>
+                  <option>Finance</option>
+                  <option>Customer Support</option>
+                </select>
+              </label>
+
+              <label class="text-sm font-medium text-slate-700">
+                Issue Category
+                <select id="issueCategory" name="issueCategory" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" required>
+                  <option value="">Select category</option>
+                  <option>Policy Clarification</option>
+                  <option>Escalation Request</option>
+                  <option>Audit Readiness</option>
+                  <option>Process Exception</option>
+                </select>
+              </label>
+
+              <label class="text-sm font-medium text-slate-700">
+                Urgency
+                <select id="urgency" name="urgency" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" required>
+                  <option value="">Select urgency</option>
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                </select>
+              </label>
+
+              <label class="text-sm font-medium text-slate-700 md:col-span-2">
+                Brief Description
+                <textarea
+                  id="description" name="description"
+                  rows="4"
+                  maxlength="300"
+                  class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+                  placeholder="Describe the issue in 1-2 sentences..."
+                  required
+                ></textarea>
+              </label>
+
+              <button
+                type="submit"
+                class="inline-flex w-full items-center justify-center rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white transition hover:bg-blue-800 md:col-span-2 md:w-auto"
+              >
+                Submit
+              </button>
+            </form>
+          </article>
+
+          <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="flex items-center justify-between gap-2">
+              <h2 class="text-xl font-semibold">3) Active SME Queue &amp; Escalation Cascade</h2>
+              <p class="text-sm text-slate-500">15-minute SLA timer per ticket</p>
+            </div>
+            <div id="queue" class="mt-4 space-y-4"></div>
+          </article>
+        </section>
+
+        <aside class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 class="text-xl font-semibold">2) The Coverage Baton</h2>
+          <p class="mt-2 text-sm text-slate-600">Compliance Department Roster</p>
+
+          <div class="mt-5 space-y-4">
+            <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+              <p class="text-xs font-semibold uppercase tracking-wide text-emerald-700">Active SME (On Duty)</p>
+              <p class="mt-1 text-lg font-semibold">John Doe</p>
+              <p class="text-sm text-slate-600">Primary Routing Owner</p>
+            </div>
+
+            <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
+              <p class="text-xs font-semibold uppercase tracking-wide text-amber-700">Secondary / Backup</p>
+              <p class="mt-1 text-lg font-semibold">Jane Smith</p>
+              <p class="text-sm text-slate-600">Auto-escalation Receiver</p>
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
