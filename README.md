@@ -1,23 +1,42 @@
-# The Whisper System (Static Prototype)
+# The Whisper System (Standalone Static App)
 
-A zero-backend, static single-page prototype for demonstrating role-based cross-department routing, 15-minute SLA tracking, and automated escalation.
+A zero-backend, single-page enterprise routing app prototype designed for leadership demos.
 
-## Recommended File Structure
+## What this app includes
+
+- **Whisper Intake Form** (department, category, urgency, description)
+- **Coverage Baton panel** with Active SME and Secondary/Backup SME
+- **15-minute SLA countdown** on every submitted ticket
+- **Automated escalation cascade** from Active SME to Backup SME when SLA expires
+- **Fast-Forward / Simulate Breach** control for presentation scenarios
+- **Ticket lifecycle actions**: acknowledge, escalate, resolve
+- **Queue filters**: search, status, urgency
+- **Metrics dashboard**: total, awaiting SLA, in progress, escalated
+- **Activity feed** for routing and status events
+- **Local persistence** via `localStorage`
+- **Demo utilities**: seed demo tickets, export JSON snapshot, clear all state
+
+## File structure
 
 ```
 /home/runner/work/the_whisper_system/the_whisper_system/
-├── index.html   # Main dashboard layout (intake form, roster, queue)
-├── app.js       # Local browser state, countdown timer, escalation logic
-├── package.json # Minimal project metadata scaffolded with npm
+├── index.html   # Full dashboard UI layout
+├── app.js       # Local app state, timer loop, escalation logic, persistence
+├── package.json # Local run and validation scripts
 └── README.md
 ```
 
-## Run Locally
-
-Open `index.html` directly in a browser, or serve statically:
+## Run locally
 
 ```bash
-python -m http.server 4173
+cd /home/runner/work/the_whisper_system/the_whisper_system
+npm run start
 ```
 
-Then visit `http://localhost:4173`.
+Then open `http://localhost:4173`.
+
+## Validation command
+
+```bash
+npm run check
+```
